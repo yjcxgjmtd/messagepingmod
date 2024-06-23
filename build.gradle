@@ -1,32 +1,31 @@
-plugins {
-    id 'fabric-loom' version '1.20.1'
-    id 'maven-publish'
+buildscript {
+    repositories {
+        maven {
+            url = 'https://maven.fabricmc.net/'
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.fabricmc:fabric-loom:1.20.1'
+    }
 }
 
-group = 'com.titan.messageping'  // 修改为你的项目的 group ID
-version = '1.0.0'      // 修改为你的项目的版本号
+apply plugin: 'fabric-loom'
+
+group = 'com.example'
+version = '1.0.0'
 
 repositories {
     maven {
-        url = 'https://maven.fabricmc.net' // Fabric 官方 Maven 仓库
+        url = 'https://maven.fabricmc.net/'
     }
-    maven {
-        url = 'https://libraries.minecraft.net' // Minecraft 官方库
-    }
-    mavenCentral()  // Maven 中央仓库
-}
-
-dependencies {
-    minecraft 'com.mojang:minecraft:1.20.1'  // Minecraft 版本号，根据你的需求修改
-    mappings 'net.fabricmc:yarn:1.20.1'  // Yarn 映射版本号，根据你的需求修改
-
-    modCompile 'net.fabricmc:fabric-api:0.92.2'  // Fabric API 版本号，根据你的需求
+    mavenCentral()
 }
 
 minecraft {
     // 设置要使用的 Minecraft 版本和运行时配置
-    version = mappings.split('+')[0]
-    mappings = mappings
+    version = '1.20.1'
+    mappings = 'net.fabricmc:yarn:1.17.1+build.8'
     runs {
         client {
             workingDirectory project.file('run')
@@ -35,6 +34,11 @@ minecraft {
             workingDirectory project.file('run')
         }
     }
+}
+
+dependencies {
+    // 添加你的模组依赖
+    modCompile 'net.fabricmc:fabric-api:0.92.2'
 }
 
 processResources {
@@ -54,5 +58,19 @@ processResources {
 tasks.named('jar', Jar) {
     from('LICENSE') {
         rename { 'LICENSE.txt' }
+    }
+}
+
+// 发布到 Maven 仓库的配置
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = 'https://maven.fabricmc.net'
+        }
     }
 }
